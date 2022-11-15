@@ -1,0 +1,8 @@
+aws cognito-idp admin-initiate-auth --user-pool-id eu-west-2_123456 --client-id 123abc --auth-flow ADMIN_NO_SRP_AUTH --auth-parameters USERNAME=demouser,PASSWORD=demouser
+
+aws cognito-idp admin-respond-to-auth-challenge --user-pool-id eu-west-2_d72it5DxJ --client-id 7q6da7r756d8ecucepkuoa3dri --session "session from the output of previous command" --challenge-name NEW_PASSWORD_REQUIRED --challenge-responses USERNAME=demouser,NEW_PASSWORD=demouser
+
+
+Get ID token:
+
+curl --header "x-api-key:abc123" --header "Authorization:ID toekn from previous command" https://abc123.execute-api.eu-west-2.amazonaws.com/Demo

@@ -1,0 +1,76 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Creates and configures cognito resources.
+Parameters:
+  Name:
+    Type: String
+    Description: Unique name for Cognito Resources
+  CallbackUrl:
+    Type: String
+    Description: >-
+      Enter your callback URLS that you will include in your sign in and sign
+      out requests.
+  SignoutUrl:
+    Type: String
+    Description: >-
+      Enter your sign out URLS that you will include in your sign in and sign
+      out requests
+Resources:
+  UserPool:
+    Type: 'AWS::Cognito::UserPool'
+    Properties:
+      UserPoolName: !Ref Name
+  UserPoolClient:
+    Type: 'AWS::Cognito::UserPoolClient'
+    Properties:
+      ClientName: !Ref Name
+      ExplicitAuthFlows:
+        - ALLOW_USER_PASSWORD_AUTH
+        - ALLOW_REFRESH_TOKEN_AUTH
+        - ALLOW_ADMIN_USER_PASSWORD_AUTH
+        - ALLOW_USER_SRP_AUTH
+      GenerateSecret: false
+      RefreshTokenValidity: '30'
+      UserPoolId:
+        Ref: UserPool
+      SupportedIdentityProviders:
+        - COGNITO
+      AllowedOAuthFlows:
+        - code
+      AllowedOAuthScopes:
+        - email
+        - openid
+        - profile
+      CallbackURLs:
+        - Ref: CallbackUrl
+      LogoutURLs:
+        - Ref: SignoutUrl
+  UserPoolDomain:
+    Type: 'AWS::Cognito::UserPoolDomain'
+    Properties:
+      Domain:
+        'Fn::Sub': '${Name}'
+      UserPoolId:
+        Ref: UserPool
+Outputs:
+  UserPoolId:
+    Description: Id of api user pool
+    Value:
+      Ref: UserPool
+    Export:
+      Name: local-UserPoolId
+  UserPoolClientId:
+    Description: Id of api user pool client
+    Value:
+      Ref: UserPoolClient
+    Export:
+      Name: local-UserPoolClientId
+  UserPoolDomain:
+    Description: UserPoolDomain name
+    Value:
+      Ref: UserPoolDomain
+    Export:
+      Name: local-UserPoolDomain
+  Region:
+    Description: AWS Region name
+    Value:
+      Ref: 'AWS::Region'
